@@ -53,6 +53,33 @@ $app->get('/api/articles', function (Request $request, Response $response, array
 
 });
 
+// Définition d'une route pour recuperer un seul article
+$app->get('/api/article/{id}', function (Request $request, Response $response, $args) use ($db) {
+    // Get the article ID from the URL
+    $id = $args['id'];
+
+    // Instantiation du modèle article en passant la connexion à la base de données
+    $article = new Article($db);
+
+     // Récupération un article depuis la base de données
+     $result = $article->retrieveArticle($id);
+
+     // Vérification si des articles ont été trouvés
+     if ($result->rowCount() > 0) {
+         $articles = $result->fetchAll(PDO::FETCH_ASSOC);
+ 
+         // Retour l'articles en tant que réponse JSON
+         $response->getBody()->write(json_encode($articles));
+         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        
+     }
+     else {
+        // Aucun article trouvé
+         $response->getBody()->write(json_encode(['message' => 'No articles found.']));
+         return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+     }
+});
+
 // Définition d'une route pour supprimer un article
 $app->delete('/api/article/delete/{id}', function (Request $request, Response $response, $args) use ($db) {
     // Get the article ID from the URL

@@ -36,14 +36,45 @@ class Article
             ' . $this->table . ' a
             LEFT JOIN
             categories c ON a.category_id = c.id ';
-                    //préparer la déclaration
-                    $stmt = $this->conn->prepare($query);
-                    //exécuter la requête 
-                    $stmt->execute();
-                    return $stmt;
+
+            //préparer la déclaration
+            $stmt = $this->conn->prepare($query);
+            
+            //exécuter la requête 
+            $stmt->execute();
+            
+            return $stmt;
     }
             
-    
+    public function retrieveArticle($id)
+    {
+        // créer une requête
+        $query = 'SELECT
+            c.name as category_name,
+            a.id,
+            a.category_id,
+            a.title,
+            a.url_image,
+            a.content
+            FROM
+            ' . $this->table . ' a
+            LEFT JOIN
+            categories c ON a.category_id = c.id 
+            WHERE a.id = :id';
+                    
+            //préparer la déclaration
+            $stmt = $this->conn->prepare($query);
+
+            // Paramètre de liaison
+            $stmt->bindParam(':id', $id);
+
+            //exécuter la requête 
+            $stmt->execute();
+
+            return $stmt;
+    }    
+
+
     public function delete($id)
     {
         // créer une requête
